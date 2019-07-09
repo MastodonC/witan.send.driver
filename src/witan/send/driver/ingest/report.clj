@@ -1,6 +1,7 @@
 (ns witan.send.driver.ingest.report
   (:require [clojure.java.io :as io]
             [net.cgrand.xforms :as x]
+            [witan.send.driver.chart :as chart]
             [witan.send.driver.ingest :as i]
             [witan.send.driver.ingest.transitions :as it]
             [witan.send.driver.ingest.valid-states :as ivs]
@@ -130,10 +131,10 @@
    (str prefix "validation-report.xlsx")
    wkbk))
 
-(defn report-all [census costs settings-map valid-states]
+(defn report-all [output-prefix census costs settings-map valid-states]
   {:settings-map settings-map
    :invalid-transition-report (validation-report census valid-states costs)
-   ;; :validation-charts (chart/validation-charts output-prefix census)
+   :validation-charts (chart/validation-charts output-prefix census)
    :transitions (it/transitions census)
    :census census
    :costs costs
@@ -141,7 +142,7 @@
 
 (defn save-all [output-prefix {:keys [invalid-transition-report settings-map transitions valid-states validation-charts] :as data}]
   (save-validation-workbook output-prefix invalid-transition-report)
-  ;;(run! chart/save validation-charts)
+  (run! chart/save validation-charts)
   (save-org-report output-prefix (org-report settings-map data))
   (it/->csv output-prefix transitions)
   (ivs/->csv output-prefix valid-states)
