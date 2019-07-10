@@ -247,12 +247,6 @@
    x/count
    census))
 
-(comment
-
-
-  )
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Transitions based charts
 (defn count-of-joiners-per-calendar-year-by-academic-year
