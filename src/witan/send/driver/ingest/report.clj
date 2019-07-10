@@ -120,7 +120,6 @@
        :data (into [["Need" "Setting"]]
                    (->> (vc/valid-costs transitions costs)
                         :no-defined-cost
-                        (remove (fn [[_ s]] (= "GFE" s)))
                         (sort-by (juxt first second))))}
       {:tab-name "Records with No Cost Defined"
        :data (transitions-data
