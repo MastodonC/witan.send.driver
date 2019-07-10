@@ -130,11 +130,11 @@
    (str prefix "validation-report.xlsx")
    wkbk))
 
-(defn report-all [output-prefix {:keys [census costs valid-states settings-map] :as data}]
+(defn report-all [{:keys [census costs valid-states settings-map] :as data}]
   (merge data
          {:settings-map settings-map
           :invalid-transition-report (validation-report census valid-states costs)
-          :validation-charts (chart/validation-charts output-prefix census)
+          :validation-charts (chart/validation-charts census)
           :transitions (it/transitions census)
           :census census
           :costs costs

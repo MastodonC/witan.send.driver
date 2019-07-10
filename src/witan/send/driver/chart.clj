@@ -359,15 +359,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; all validation charts
-(defn validation-charts [prefix census]
+(defn validation-charts [census]
   (let [calendar-years (x/into (sorted-set) (map :calendar-year) census)
         settings (x/into (sorted-set) (map :setting) census)
         needs (x/into (sorted-set) (map :need) census)
         transition-years (->> calendar-years
                               (drop-last)
                               (map (fn [y] (str y "-" (inc y)))))
-        data {:prefix prefix
-              :census census
+        data {:census census
               :transitions (it/transitions census)
               :calendar-years calendar-years
               :settings settings
