@@ -142,7 +142,7 @@
 
 (defn save-all [output-prefix {:keys [invalid-transition-report settings-map transitions valid-states validation-charts] :as data}]
   (save-validation-workbook output-prefix invalid-transition-report)
-  (run! chart/save validation-charts)
+  (run! (partial chart/save output-prefix) validation-charts)
   (save-org-report output-prefix (org-report settings-map data))
   (it/->csv output-prefix transitions)
   (ivs/->csv output-prefix valid-states)

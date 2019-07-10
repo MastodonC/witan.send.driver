@@ -155,7 +155,7 @@
         (plotr/render-lattice {:width 800 :height 600}))))
 
 (defn save
-  [{:keys [chart prefix file-name] :as chart-spec}]
+  [prefix {:keys [chart file-name] :as chart-spec}]
   (plot/save chart (str prefix file-name))
   chart-spec)
 
