@@ -14,12 +14,12 @@
   (with-open [w (io/writer (str prefix "report.org"))]
     (.write w txt)))
 
-(defn org-report [settings-map data]
+(defn org-report [settings-map {:keys [census transitions validation-charts]}]
   (str
    (org/h1 "Overview")
 
    (org/para ["Data was provided for calendar years "
-              (apply str (interpose ", " (i/calendar-years (:census data))))
+              (apply str (interpose ", " (i/calendar-years census)))
               "."])
 
    (org/para ["Invalid transitions and need/setting pairs without costs can be found "
@@ -29,9 +29,9 @@
    (org/h1 "Setting Mappings")
 
    (org/table
-    {:escc "ESCC Name" :mc "MC Name"}
-    [:escc :mc]
-    (map (fn [[k v]] {:escc k :mc v}) settings-map))
+    {:client "Client Name" :mc "MC Name"}
+    [:client :mc]
+    (map (fn [[k v]] {:client k :mc v}) settings-map))
 
    (org/h1 "SEND population per year")
    (org/table
@@ -40,7 +40,7 @@
     (map (fn [[k v ]] {:year k :count v})
          (into (sorted-map)
                (x/by-key :calendar-year x/count)
-               (:census data))))
+               census)))
 
    (org/h1 "Transitions per year")
    (org/table
@@ -49,7 +49,7 @@
     (map (fn [[k v]] {:year (str k "-" (inc k)) :count v})
          (into (sorted-map)
                (x/by-key :calendar-year x/count)
-               (:transitions data))))
+               transitions)))
 
 
    (org/h1 "Leavers per year")
@@ -61,7 +61,7 @@
                (comp
                 (filter i/leaver?)
                 (x/by-key :calendar-year x/count))
-               (:transitions data))))
+               transitions)))
 
    (org/h1 "Joiners per year")
    (org/table
@@ -72,14 +72,14 @@
                (comp
                 (filter i/joiner?)
                 (x/by-key :calendar-year x/count))
-               (:transitions data))))
+               transitions)))
 
    (org/h1 "Charts")
    (apply str
           (interpose "\n"
                      (map (fn [{:keys [title file-name]}]
                             (str (org/h2 title) (org/img (str "./" file-name))))
-                          (:validation-charts data))))))
+                          validation-charts)))))
 
 (defn transitions-data [transitions]
   (into [["anon-ref" "calendar-year" "setting-1" "need-1" "academic-year-1" "setting-2" "need-2" "academic-year-2"]]
@@ -120,7 +120,6 @@
        :data (into [["Need" "Setting"]]
                    (->> (vc/valid-costs transitions costs)
                         :no-defined-cost
-                        (remove (fn [[_ s]] (= "GFE" s)))
                         (sort-by (juxt first second))))}
       {:tab-name "Records with No Cost Defined"
        :data (transitions-data
@@ -131,18 +130,19 @@
    (str prefix "validation-report.xlsx")
    wkbk))
 
-(defn report-all [output-prefix census costs settings-map valid-states]
-  {:settings-map settings-map
-   :invalid-transition-report (validation-report census valid-states costs)
-   :validation-charts (chart/validation-charts output-prefix census)
-   :transitions (it/transitions census)
-   :census census
-   :costs costs
-   :valid-states valid-states})
+(defn report-all [{:keys [census costs valid-states settings-map] :as data}]
+  (merge data
+         {:settings-map settings-map
+          :invalid-transition-report (validation-report census valid-states costs)
+          :validation-charts (chart/validation-charts census)
+          :transitions (it/transitions census)
+          :census census
+          :costs costs
+          :valid-states valid-states}))
 
 (defn save-all [output-prefix {:keys [invalid-transition-report settings-map transitions valid-states validation-charts] :as data}]
   (save-validation-workbook output-prefix invalid-transition-report)
-  (run! chart/save validation-charts)
+  (run! (partial chart/save output-prefix) validation-charts)
   (save-org-report output-prefix (org-report settings-map data))
   (it/->csv output-prefix transitions)
   (ivs/->csv output-prefix valid-states)
