@@ -29,9 +29,9 @@
    (org/h1 "Setting Mappings")
 
    (org/table
-    {:escc "Client Name" :mc "MC Name"}
-    [:escc :mc]
-    (map (fn [[k v]] {:escc k :mc v}) settings-map))
+    {:client "Client Name" :mc "MC Name"}
+    [:client :mc]
+    (map (fn [[k v]] {:client k :mc v}) settings-map))
 
    (org/h1 "SEND population per year")
    (org/table
