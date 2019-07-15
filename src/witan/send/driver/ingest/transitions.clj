@@ -2,67 +2,75 @@
   (:require [clojure.data.csv :as csv]
             [clojure.java.io :as io]
             [clojure.set :as cs]
-            [net.cgrand.xforms :as x]
-            [net.cgrand.xforms.rfs :as rfs]
             [witan.send.constants :as const]))
+
+;; This was inspired by this blog post:
+;; https://statcompute.wordpress.com/2018/04/08/inner-and-outer-joins-in-clojure/
+;; especially the outer join #1 part
 
 (def NONSEND (name const/non-send))
 
-(defn lookup-years [census]
-  (x/into {}
-          (map (fn [{:keys [calendar-year anon-ref academic-year need setting]}]
-                 {[anon-ref calendar-year]
-                  {:academic-year academic-year
-                   :need need
-                   :setting setting}}))
-          census))
+(defn *-1-side
+  "Produce the *-1 side of the transitions which will not have the last
+  year."
+  [census]
+  (let [last-year (reduce max (map :calendar-year census))]
+    (into #{}
+          (comp
+           (filter #(< (:calendar-year %) last-year))
+           (map #(cs/rename-keys % {:setting :setting-1
+                                    :need :need-1
+                                    :academic-year :academic-year-1})))
+          census)))
 
-(defn create-transition-1 [lookup-years {:keys [calendar-year anon-ref academic-year] :as r}]
-  (x/into (sorted-map)
-          (let [lookup-calendar-year (inc calendar-year)]
-            (-> r
-                (cs/rename-keys {:academic-year :academic-year-1
-                                 :need :need-1
-                                 :setting :setting-1})
-                (merge (-> (get lookup-years [anon-ref lookup-calendar-year]
-                                {:academic-year (inc academic-year)
-                                 :need NONSEND
-                                 :setting NONSEND})
-                           (cs/rename-keys {:academic-year :academic-year-2
-                                            :need :need-2
-                                            :setting :setting-2})))
-                (assoc :calendar-year calendar-year)))))
+(defn *-2-side
+  "Produce the *-2 side of the transitions which will not have the first
+  year."
+  [census]
+  (let [first-year (reduce min (map :calendar-year census))]
+    (into #{}
+          (comp
+           (filter #(< first-year (:calendar-year %)))
+           (map #(cs/rename-keys % {:setting :setting-2
+                                    :need :need-2
+                                    :academic-year :academic-year-2}))
+           (map #(update % :calendar-year dec)))
+          census)))
 
-(defn create-transition-2 [lookup-years {:keys [calendar-year anon-ref academic-year] :as r}]
-  (x/into (sorted-map)
-          (let [transition-calendar-year (dec calendar-year)]
-            (-> r
-                (cs/rename-keys {:academic-year :academic-year-2
-                                 :need :need-2
-                                 :setting :setting-2})
-                (merge (-> (get lookup-years [anon-ref transition-calendar-year]
-                                {:academic-year (dec academic-year)
-                                 :need NONSEND
-                                 :setting NONSEND})
-                           (cs/rename-keys {:academic-year :academic-year-1
-                                            :need :need-1
-                                            :setting :setting-1})))
-                (assoc :calendar-year transition-calendar-year)))))
+(defn needs-joiner? [transition]
+  (nil? (:need-1 transition)))
 
-(defn create-transitions [min-cal-year max-cal-year lookup-years {:keys [calendar-year] :as census-record}]
-  (cond
-    (= calendar-year min-cal-year) [(create-transition-1 lookup-years census-record)]
-    (= calendar-year max-cal-year) [(create-transition-2 lookup-years census-record)]
-    :else [(create-transition-1 lookup-years census-record) (create-transition-2 lookup-years census-record)]))
+(defn needs-leaver? [transition]
+  (nil? (:need-2 transition)))
+
+(defn joiner-side
+  "Fill in the missing joiner side."
+  [{:keys [academic-year-2] :as transition}]
+  (assoc transition
+         :academic-year-1 (dec academic-year-2)
+         :need-1 NONSEND
+         :setting-1 NONSEND))
+
+(defn leaver-side
+  "Fill in the missing leaver side"
+  [{:keys [academic-year-1] :as transition}]
+  (assoc transition
+         :need-2 NONSEND
+         :setting-2 NONSEND
+         :academic-year-2 (inc academic-year-1)))
 
 (defn transitions [census]
-  (let [min-cal-year (transduce (map :calendar-year) rfs/min census)
-        max-cal-year (transduce (map :calendar-year) rfs/max census)
-        lookup-years (lookup-years census)]
-    (x/into #{}
-            (comp
-             (mapcat (partial create-transitions min-cal-year max-cal-year lookup-years)))
-            census)))
+  (let [s1 (*-1-side census)
+        s2 (*-2-side census)]
+    (into (sorted-set-by (fn [x y]
+                           (compare
+                            ((juxt :anon-ref :calendar-year :academic-year-1 :academic-year-2) x)
+                            ((juxt :anon-ref :calendar-year :academic-year-1 :academic-year-2) y))))
+          (comp
+           (map #(apply merge %))
+           (map #(if (needs-joiner? %) (joiner-side %) %))
+           (map #(if (needs-leaver? %) (leaver-side %) %)))
+          (vals (group-by (juxt :anon-ref :calendar-year) (cs/union s1 s2))))))
 
 (defn ->csv [prefix transitions]
   (with-open [w (io/writer (str prefix "transitions.csv"))]
