@@ -44,5 +44,4 @@
             {:anon-ref 2, :calendar-year 2017, :setting-2 "SA", :need-2 "N1", :academic-year-2 1}
             {:anon-ref 3, :calendar-year 2015, :setting-2 "SA", :need-2 "N1", :academic-year-2 1}
             {:anon-ref 0, :calendar-year 2017, :setting-2 "SA", :need-2 "N1", :academic-year-2 3}}
-          (sut/*-2-side mini-census)
-          )))
+          (sut/*-2-side mini-census))))
