@@ -1,4 +1,4 @@
-(ns witan.send.driver.ingest.validate.states
+(ns witan.send.driver.ingest.validate.states-test
   (:require [witan.send.driver.validate.states :as sut]
             [clojure.test :as t]))
 
