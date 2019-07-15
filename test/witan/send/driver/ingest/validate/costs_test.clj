@@ -1,4 +1,4 @@
-(ns witan.send.driver.ingest.validate.costs
+(ns witan.send.driver.ingest.validate.costs-test
   (:require [witan.send.driver.validate.costs :as sut]
             [clojure.test :as t]))
 
