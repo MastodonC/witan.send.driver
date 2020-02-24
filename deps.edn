@@ -1,0 +1,18 @@
+{:paths ["resources" "src"]
+ :deps  {org.clojure/clojure            {:mvn/version "1.10.1"}
+         org.clojure/data.csv           {:mvn/version "0.1.4"}
+         org.clojure/math.combinatorics {:mvn/version "0.1.6"}
+         cljplot                        {:mvn/version "0.0.2-SNAPSHOT"}
+         dk.ative/docjure               {:mvn/version "1.13.0"}
+         net.cgrand/xforms              {:mvn/version "0.18.2"}
+         tick                           {:mvn/version "0.4.14-alpha"}
+         witan.send                     {:mvn/version "0.1.0-SNAPSHOT"}}
+ :aliases
+ {:test {:extra-paths ["test"]
+         :extra-deps  {org.clojure/test.check {:mvn/version "0.10.0-RC1"}}}
+  :runner
+  {:extra-deps {com.cognitect/test-runner
+                {:git/url "https://github.com/cognitect-labs/test-runner"
+                 :sha     "76568540e7f40268ad2b646110f237a60295fa3c"}}
+   :main-opts  ["-m" "cognitect.test-runner"
+                "-d" "test"]}}}
