@@ -258,7 +258,7 @@
      :calendar-year
      transition-years
      transition-years-palette
-     x/count
+                               x/count
      (filter filter-pred transitions))))
 
 (defn count-of-joiners-per-calendar-year-by-need
@@ -271,7 +271,7 @@
      transition-years
      transition-years-palette
      x/count
-            (filter filter-pred transitions))))
+                                      (filter filter-pred transitions))))
 
 (defn count-of-joiners-per-calendar-year-by-setting
   [{:keys [transition-years transition-years-palette transitions]}]
@@ -383,23 +383,23 @@
       needs-by-calendar-year
       settings-by-calendar-year
       total-population-per-calendar-year-by-academic-year
-                                               count-of-joiners-per-calendar-year-by-academic-year
-                                               count-of-joiners-per-calendar-year-by-need
-                                               count-of-joiners-per-calendar-year-by-setting
-                                               count-of-leavers-per-calendar-year-by-academic-year
-                                               count-of-leavers-per-calendar-year-by-need
-                                               count-of-leavers-per-calendar-year-by-setting
-                                               count-of-movers-per-calendar-year-by-academic-year
-                                               count-of-stayers-per-calendar-year-by-academic-year
-                                               count-of-all-transitions-by-type)
-                                                data)))
+      count-of-joiners-per-calendar-year-by-academic-year
+      count-of-joiners-per-calendar-year-by-need
+      count-of-joiners-per-calendar-year-by-setting
+      count-of-leavers-per-calendar-year-by-academic-year
+      count-of-leavers-per-calendar-year-by-need
+      count-of-leavers-per-calendar-year-by-setting
+      count-of-movers-per-calendar-year-by-academic-year
+      count-of-stayers-per-calendar-year-by-academic-year
+      count-of-all-transitions-by-type)
+     data)))
 
 (defn transition-charts [transitions]
   (let [transition-years (x/into (sorted-set) (map :calendar-year) transitions)
         calendar-years (conj transition-years (dec (first transition-years)))
         settings (x/into (sorted-set) (map :setting-1) transitions)
         needs (x/into (sorted-set) (map :need-1) transitions)
-        data { ;; :census census
+        data {:census (it/->census-like transitions)
               :transitions transitions
               :calendar-years calendar-years
               :settings settings
@@ -410,13 +410,14 @@
               :calendar-years-palette (zipmap calendar-years (color/palette-presets :green-orange-teal))
               :transition-years-palette (zipmap transition-years (color/palette-presets :green-orange-teal))}]
     ((juxt
-      ;; Can't do these from transitions only atm
-      ;; total-population-per-calendar-year-broken-down-by-need
-      ;; total-population-per-calendar-year-broken-down-by-setting
-      ;; needs-by-calendar-year
-      ;; settings-by-calendar-year
-      ;; total-population-per-calendar-year-by-academic-year
+      ;; census based
+      total-population-per-calendar-year-broken-down-by-need
+      total-population-per-calendar-year-broken-down-by-setting
+      needs-by-calendar-year
+      settings-by-calendar-year
+      total-population-per-calendar-year-by-academic-year
 
+      ;; transitions based
       count-of-joiners-per-calendar-year-by-academic-year
       count-of-joiners-per-calendar-year-by-need
       count-of-joiners-per-calendar-year-by-setting

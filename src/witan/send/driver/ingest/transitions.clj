@@ -80,3 +80,33 @@
        (into [(mapv name header)]
              (map (apply juxt header))
              transitions)))))
+
+(defn transition-s1->census [{:keys [calendar-year setting-1 need-1 academic-year-1]}]
+  {:anon-ref -1
+   :calendar-year calendar-year
+   :setting setting-1
+   :need need-1
+   :academic-year academic-year-1})
+
+(defn transition-s2->census [{:keys [calendar-year setting-2 need-2 academic-year-2]}]
+  {:anon-ref -1
+   :calendar-year (inc calendar-year)
+   :setting setting-2
+   :need need-2
+   :academic-year academic-year-2})
+
+(defn ->census-like
+  "Create a census shaped data structure for further charting output. It
+  can never be a proper census file as we don't have the pseudo IDs
+  that would allow us to trace longitudinally."
+  [transitions]
+  (let [last-transition-year (last (into (sorted-set) (map :calendar-year transitions)))]
+    (println last-transition-year)
+    (into
+     (into []
+           (map transition-s1->census)
+           transitions)
+     (comp
+      (filter #(= (:calendar-year %) last-transition-year))
+      (map transition-s2->census))
+     transitions)))
