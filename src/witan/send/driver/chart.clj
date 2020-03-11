@@ -72,7 +72,7 @@
         ;;(plotb/add-label :left range-name)
         (plotb/add-label :top title {:font-size 24 :font "Open Sans Bold" :margin 36})
         (plotb/add-legend "" legend-spec)
-        (plotr/render-lattice {:width 1539 :height 1037}))))
+        (plotr/render-lattice {:width 1539 :height 1037 :background (color/color :white)}))))
 
 (defn grouped-column-mini
   [title domain colours data]
@@ -113,7 +113,7 @@
         ;; (plotb/add-label :bottom domain-name)
         ;; (plotb/add-label :left range-name)
         (plotb/add-legend "" legend-spec)
-        (plotr/render-lattice {:width 1539 :height 1037}))))
+        (plotr/render-lattice {:width 1539 :height 1037 :background (color/color :white)}))))
 
 (defn stacked-column-mini
   [title domain colours data]
@@ -152,7 +152,7 @@
         (plotb/add-label :bottom "bottom label")
         (plotb/add-label :left "left label")
         (plotb/add-legend "symbol" legend)
-        (plotr/render-lattice {:width 1539 :height 1037}))))
+        (plotr/render-lattice {:width 1539 :height 1037 :background (color/color :white)}))))
 
 (defn save
   [prefix {:keys [chart file-name] :as chart-spec}]
