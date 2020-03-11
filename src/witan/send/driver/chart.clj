@@ -250,15 +250,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Transitions based charts
 (defn count-of-joiners-per-calendar-year-by-academic-year
-  [{:keys [transition-years transition-years-palette transitions]}]
+  [{:keys [transition-years transition-years-palette transitions title]}]
   (let [filter-pred i/joiner?]
     (wrapped-grouped-column-chart
-     "Count of joiners per calendar year by academic year"
+     (or title "Count of joiners per calendar year by academic year")
      :academic-year-2
      :calendar-year
      transition-years
      transition-years-palette
-                               x/count
+     x/count
      (filter filter-pred transitions))))
 
 (defn count-of-joiners-per-calendar-year-by-need
@@ -271,7 +271,7 @@
      transition-years
      transition-years-palette
      x/count
-                                      (filter filter-pred transitions))))
+     (filter filter-pred transitions))))
 
 (defn count-of-joiners-per-calendar-year-by-setting
   [{:keys [transition-years transition-years-palette transitions]}]
@@ -286,10 +286,10 @@
      (filter filter-pred transitions))))
 
 (defn count-of-leavers-per-calendar-year-by-academic-year
-  [{:keys [transition-years transition-years-palette transitions]}]
+  [{:keys [transition-years transition-years-palette transitions title]}]
   (let [filter-pred i/leaver?]
     (wrapped-grouped-column-chart
-     "Count of leavers per calendar year by academic year"
+     (or title "Count of leavers per calendar year by academic year")
      :academic-year-1
      :calendar-year
      transition-years
@@ -322,10 +322,10 @@
      (filter filter-pred transitions))))
 
 (defn count-of-movers-per-calendar-year-by-academic-year
-  [{:keys [transition-years transition-years-palette transitions]}]
+  [{:keys [transition-years transition-years-palette transitions title]}]
   (let [filter-pred i/mover?]
     (wrapped-grouped-column-chart
-     "Count of movers per calendar year by academic year"
+     (or title "Count of movers per calendar year by academic year")
      :academic-year-1
      :calendar-year
      transition-years
