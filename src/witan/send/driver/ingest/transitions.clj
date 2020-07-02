@@ -101,7 +101,6 @@
   that would allow us to trace longitudinally."
   [transitions]
   (let [last-transition-year (last (into (sorted-set) (map :calendar-year transitions)))]
-    (println last-transition-year)
     (into
      (into []
            (map transition-s1->census)
