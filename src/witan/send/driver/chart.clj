@@ -411,8 +411,8 @@
               :transition-years-palette (zipmap transition-years (color/palette-presets :green-orange-teal))}]
     ((juxt
       ;; census based
-      total-population-per-calendar-year-broken-down-by-need
-      total-population-per-calendar-year-broken-down-by-setting
+      ;;total-population-per-calendar-year-broken-down-by-need ;;FIXME
+      ;;total-population-per-calendar-year-broken-down-by-setting ;;FIXME
       needs-by-calendar-year
       settings-by-calendar-year
       total-population-per-calendar-year-by-academic-year
