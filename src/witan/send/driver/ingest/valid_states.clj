@@ -23,8 +23,7 @@
           (comp
            (drop 1)
            fixup-xf)
-          (ie/rows file-name "Sheet1" ;;(zipmap [:A :B :C :D :E :F] header)
-                   ))))
+          (ie/rows file-name "Sheet1"))))
 
 (defn ->csv [output-prefix valid-states]
   (with-open [w (io/writer (str output-prefix "valid-states.csv"))]
