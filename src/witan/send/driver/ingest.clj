@@ -34,15 +34,17 @@
 (defn mover? [{:keys [setting-1 need-1 setting-2 need-2] :as rec}]
   (when (and (not (or (joiner? rec)
                       (leaver? rec)))
-             (or (not= setting-1 setting-2)
-                 (not= need-1 need-2)))
+             (not= setting-1 setting-2)
+             #_(or (not= setting-1 setting-2)
+                   (not= need-1 need-2)))
     rec))
 
 (defn stayer? [{:keys [setting-1 need-1 setting-2 need-2] :as rec}]
   (when (and (not (or (joiner? rec)
                       (leaver? rec)))
-             (and (= setting-1 setting-2)
-                  (= need-1 need-2)))
+             (= setting-1 setting-2)
+             #_(and (= setting-1 setting-2)
+                    (= need-1 need-2)))
     rec))
 
 (defn outside-of-send? [transition]

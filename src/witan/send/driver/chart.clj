@@ -72,7 +72,7 @@
         ;;(plotb/add-label :left range-name)
         (plotb/add-label :top title {:font-size 24 :font "Open Sans Bold" :margin 36})
         (plotb/add-legend "" legend-spec)
-        (plotr/render-lattice {:width 800 :height 600}))))
+        (plotr/render-lattice {:width 1539 :height 1037 :background (color/color :white)}))))
 
 (defn grouped-column-mini
   [title domain colours data]
@@ -113,7 +113,7 @@
         ;; (plotb/add-label :bottom domain-name)
         ;; (plotb/add-label :left range-name)
         (plotb/add-legend "" legend-spec)
-        (plotr/render-lattice {:width 800 :height 600}))))
+        (plotr/render-lattice {:width 1539 :height 1037 :background (color/color :white)}))))
 
 (defn stacked-column-mini
   [title domain colours data]
@@ -152,7 +152,7 @@
         (plotb/add-label :bottom "bottom label")
         (plotb/add-label :left "left label")
         (plotb/add-legend "symbol" legend)
-        (plotr/render-lattice {:width 800 :height 600}))))
+        (plotr/render-lattice {:width 1539 :height 1037 :background (color/color :white)}))))
 
 (defn save
   [prefix {:keys [chart file-name] :as chart-spec}]
@@ -250,10 +250,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Transitions based charts
 (defn count-of-joiners-per-calendar-year-by-academic-year
-  [{:keys [transition-years transition-years-palette transitions]}]
+  [{:keys [transition-years transition-years-palette transitions title]}]
   (let [filter-pred i/joiner?]
     (wrapped-grouped-column-chart
-     "Count of joiners per calendar year by academic year"
+     (or title "Count of joiners per calendar year by academic year")
      :academic-year-2
      :calendar-year
      transition-years
@@ -286,10 +286,10 @@
      (filter filter-pred transitions))))
 
 (defn count-of-leavers-per-calendar-year-by-academic-year
-  [{:keys [transition-years transition-years-palette transitions]}]
+  [{:keys [transition-years transition-years-palette transitions title]}]
   (let [filter-pred i/leaver?]
     (wrapped-grouped-column-chart
-     "Count of leavers per calendar year by academic year"
+     (or title "Count of leavers per calendar year by academic year")
      :academic-year-1
      :calendar-year
      transition-years
@@ -322,10 +322,10 @@
      (filter filter-pred transitions))))
 
 (defn count-of-movers-per-calendar-year-by-academic-year
-  [{:keys [transition-years transition-years-palette transitions]}]
+  [{:keys [transition-years transition-years-palette transitions title]}]
   (let [filter-pred i/mover?]
     (wrapped-grouped-column-chart
-     "Count of movers per calendar year by academic year"
+     (or title "Count of movers per calendar year by academic year")
      :academic-year-1
      :calendar-year
      transition-years
@@ -383,6 +383,41 @@
       needs-by-calendar-year
       settings-by-calendar-year
       total-population-per-calendar-year-by-academic-year
+      count-of-joiners-per-calendar-year-by-academic-year
+      count-of-joiners-per-calendar-year-by-need
+      count-of-joiners-per-calendar-year-by-setting
+      count-of-leavers-per-calendar-year-by-academic-year
+      count-of-leavers-per-calendar-year-by-need
+      count-of-leavers-per-calendar-year-by-setting
+      count-of-movers-per-calendar-year-by-academic-year
+      count-of-stayers-per-calendar-year-by-academic-year
+      count-of-all-transitions-by-type)
+     data)))
+
+(defn transition-charts [transitions]
+  (let [transition-years (x/into (sorted-set) (map :calendar-year) transitions)
+        calendar-years (conj transition-years (inc (last transition-years)))
+        settings (x/into (sorted-set) (map :setting-1) transitions)
+        needs (x/into (sorted-set) (map :need-1) transitions)
+        data {:census (it/->census-like transitions)
+              :transitions transitions
+              :calendar-years calendar-years
+              :settings settings
+              :needs needs
+              :transition-years transition-years
+              :settings-palette (zipmap settings (color/palette-presets :tableau-20))
+              :needs-palette (zipmap needs (reverse (color/palette-presets :tableau-20)))
+              :calendar-years-palette (zipmap calendar-years (color/palette-presets :green-orange-teal))
+              :transition-years-palette (zipmap transition-years (color/palette-presets :green-orange-teal))}]
+    ((juxt
+      ;; census based
+      ;;total-population-per-calendar-year-broken-down-by-need ;;FIXME
+      ;;total-population-per-calendar-year-broken-down-by-setting ;;FIXME
+      needs-by-calendar-year
+      settings-by-calendar-year
+      total-population-per-calendar-year-by-academic-year
+
+      ;; transitions based
       count-of-joiners-per-calendar-year-by-academic-year
       count-of-joiners-per-calendar-year-by-need
       count-of-joiners-per-calendar-year-by-setting

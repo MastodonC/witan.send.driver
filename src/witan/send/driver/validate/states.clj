@@ -75,4 +75,5 @@
            [(partial valid-setting-transition? valid-states) :invalid-setting-transition]]))
 
 (defn valid-transition? [valid-states transition]
-  (when-not (:anomalies (validate-transition valid-states transition))))
+  (when-not (:anomalies (validate-transition valid-states transition))
+    transition))
