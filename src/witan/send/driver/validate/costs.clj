@@ -50,3 +50,19 @@
   (into #{}
         (remove (partial transition-has-cost? costs))
         transitions))
+
+(defn build-dummy-costs
+  ([needs settings]
+   (mapcat (fn [need]
+             (map (fn [setting]
+                    (assoc {}
+                           :need need
+                           :setting setting
+                           :cost 1000)) settings)) needs))
+  ([census-data]
+   (build-dummy-costs (into (sorted-set)
+                            (map :need)
+                            census-data)
+                      (into (sorted-set)
+                            (map :setting)
+                            census-data))))

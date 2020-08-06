@@ -6,7 +6,7 @@
          dk.ative/docjure               {:mvn/version "1.13.0"}
          net.cgrand/xforms              {:mvn/version "0.18.2"}
          tick                           {:mvn/version "0.4.14-alpha"}
-         witan.send                     {:mvn/version "0.1.0-SNAPSHOT"}}
+         witan.send                     {:local/root "../witan.send"}}
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps  {org.clojure/test.check {:mvn/version "0.10.0-RC1"}}}
