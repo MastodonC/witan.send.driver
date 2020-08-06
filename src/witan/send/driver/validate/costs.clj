@@ -50,3 +50,11 @@
   (into #{}
         (remove (partial transition-has-cost? costs))
         transitions))
+
+(defn build-dummy-costs [needs settings census-data]
+  (mapcat (fn [need]
+            (map (fn [setting]
+                   (assoc {}
+                          :need need
+                          :setting setting
+                          :cost 1000)) settings)) needs))
