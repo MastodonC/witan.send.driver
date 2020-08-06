@@ -1,7 +1,8 @@
 (ns witan.send.driver.validate.states
   (:require [clojure.math.combinatorics :as combo]
             [witan.send.check-inputs :as ci]
-            [witan.send.driver.ingest :as i]))
+            [witan.send.driver.ingest :as i]
+            [witan.send.domain.academic-years :as ay]))
 
 (defn valid-states-for-setting [{:keys [needs setting min-academic-year max-academic-year]}]
   (into []
@@ -77,3 +78,40 @@
 (defn valid-transition? [valid-states transition]
   (when-not (:anomalies (validate-transition valid-states transition))
     transition))
+
+(defn keystage-min-ay [y]
+  (cond
+    (ay/early-years y) (apply min ay/early-years)
+    (ay/key-stage-1 y) (apply min ay/key-stage-1)
+    (ay/key-stage-2 y) (apply min ay/key-stage-2)
+    (ay/key-stage-3 y) (apply min ay/key-stage-3)
+    (ay/key-stage-4 y) (apply min ay/key-stage-4)
+    (ay/key-stage-5 y) (apply min ay/key-stage-5)
+    (ay/ncy-15+ y) (apply min ay/ncy-15+)))
+
+(defn keystage-max-ay [y]
+  (cond
+    (ay/early-years y) (apply max ay/early-years)
+    (ay/key-stage-1 y) (apply max ay/key-stage-1)
+    (ay/key-stage-2 y) (apply max ay/key-stage-2)
+    (ay/key-stage-3 y) (apply max ay/key-stage-3)
+    (ay/key-stage-4 y) (apply max ay/key-stage-4)
+    (ay/key-stage-5 y) (apply max ay/key-stage-5)
+    (ay/ncy-15+ y) (apply max ay/ncy-15+)))
+
+(defn get-grouping [setting setting-groups]
+  (get setting-groups setting setting))
+
+(defn build-dummy-states [needs settings setting-groups census-data]
+  (map (fn [setting] (let [ays (into #{} (comp
+                                          (filter #(= setting (:setting %)))
+                                          (filter #(< (:academic-year %) 21))
+                                          (map :academic-year))
+                                     census-data)]
+                       (assoc {}
+                              :setting setting
+                              :setting-group (get-grouping setting setting-groups)
+                              :min-academic-year (keystage-min-ay (apply min ays))
+                              :max-academic-year (keystage-max-ay (apply max ays))
+                              :needs needs
+                              :setting->setting settings))) settings))
