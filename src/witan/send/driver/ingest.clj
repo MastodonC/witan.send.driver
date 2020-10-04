@@ -1,8 +1,12 @@
 (ns witan.send.driver.ingest
-  (:require [witan.send.constants :as const]
+  (:require [clojure.string :as s]
+            [witan.send.constants :as const]
             [witan.send.driver.transitions :as dt]))
 
 (def NON-SEND (name const/non-send))
+
+(defn safe-trim [s]
+  (when (string? s) (s/trim s)))
 
 (defn ->int [x]
   (cond (int? x)
