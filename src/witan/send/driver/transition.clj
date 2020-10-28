@@ -44,24 +44,6 @@
         (stayer? rec) :stayer
         (mover? rec)  :mover))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn advances-one-ay? [{:keys [academic-year-1 academic-year-2] :as rec}]
-  (when (= 1 (- academic-year-2  academic-year-1))
-    rec))
-
-(defn skips-one-or-more-years? [{:keys [academic-year-1 academic-year-2] :as rec}]
-  (when (< 1 (- academic-year-2  academic-year-1))
-    rec))
-
-(defn held-back-year? [{:keys [academic-year-1 academic-year-2] :as rec}]
-  (when (zero? (- academic-year-2  academic-year-1))
-    rec))
-
-(defn goes-back-one-or-more-years? [{:keys [academic-year-1 academic-year-2] :as rec}]
-  (when (neg? (- academic-year-2  academic-year-1))
-    rec))
-
 (defn advances-one-ay? [{:keys [academic-year-1 academic-year-2] :as rec}]
   (when (= 1 (- academic-year-2  academic-year-1))
     rec))
