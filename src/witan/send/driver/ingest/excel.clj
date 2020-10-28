@@ -1,5 +1,6 @@
 (ns witan.send.driver.ingest.excel
-  (:require [dk.ative.docjure.spreadsheet :as xl]))
+  (:require [dk.ative.docjure.spreadsheet :as xl])
+  (:import [org.apache.poi.ss.usermodel Row]))
 
 (defn read-row [^org.apache.poi.ss.usermodel.Row row]
   (map xl/read-cell (xl/cell-seq row)))
@@ -9,3 +10,54 @@
                      (xl/select-sheet sheet-name)
                      xl/row-seq)]
     (map read-row row-seq)))
+
+
+(defn file->sheets [file-name]
+  (into []
+        (-> file-name
+            xl/load-workbook
+            xl/sheet-seq)))
+
+(defn files->sheets [files]
+  (into []
+        (mapcat file->sheets)
+        files))
+
+(def file-names->workbook-xf
+  (map (fn [file-name] {::file-name file-name
+                        ::workbook (xl/load-workbook file-name)})))
+
+(def workbook->data-xf
+  (comp
+   (map (fn [{:keys [::file-name ::workbook]}]
+          {::file-name file-name
+           ::sheets (xl/sheet-seq workbook)}))
+   (mapcat (fn [{:keys [::file-name ::sheets]}]
+             (into []
+                   (comp
+                    (map (fn [sheet]
+                           {::file-name file-name
+                            ::sheet-name (xl/sheet-name sheet)
+                            ::rows (into [] (xl/row-seq sheet))}))
+                    (mapcat (fn [{:keys [::file-name ::sheet-name ::rows]}]
+                              (into []
+                                    (comp
+                                     (map (fn [^Row row]
+                                            {::file-name file-name
+                                             ::sheet-name sheet-name
+                                             ::row row
+                                             ::row-index (inc (.getRowNum row))
+                                             ::cells (read-row row)}))
+                                     (filter #(some some? (::cells %))))
+                                    rows))))
+                   sheets)))))
+
+(def files->data-xf
+  (comp
+   file-names->workbook-xf
+   workbook->data-xf))
+
+(defn files->data [file-names]
+  (into []
+        files->data-xf
+        file-names))
