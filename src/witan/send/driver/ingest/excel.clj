@@ -3,7 +3,9 @@
   (:import [org.apache.poi.ss.usermodel Row]))
 
 (defn read-row [^org.apache.poi.ss.usermodel.Row row]
-  (map xl/read-cell (xl/cell-seq row)))
+  (into []
+        (map xl/read-cell)
+        (xl/cell-seq row)))
 
 (defn rows [file-name sheet-name]
   (let [row-seq (->> (xl/load-workbook file-name)
