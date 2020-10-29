@@ -28,3 +28,5 @@
 (def outside-of-send? dt/outside-of-send?)
 
 (def transition-type dt/transition-type)
+
+(def advances-one-ay? dt/advances-one-ay?)
