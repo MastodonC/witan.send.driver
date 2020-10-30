@@ -1,4 +1,4 @@
-(ns witan.send.driver.transition
+(ns witan.send.driver.transitions
   (:require [witan.send.constants :as const]))
 
 (def NON-SEND (name const/non-send))
