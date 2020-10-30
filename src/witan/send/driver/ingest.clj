@@ -1,6 +1,6 @@
 (ns witan.send.driver.ingest
   (:require [witan.send.constants :as const]
-            [witan.send.driver.transition :as dt]))
+            [witan.send.driver.transitions :as dt]))
 
 (def NON-SEND (name const/non-send))
 
