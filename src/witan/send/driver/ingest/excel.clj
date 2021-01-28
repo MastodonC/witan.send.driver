@@ -29,30 +29,34 @@
   (map (fn [file-name] {::file-name file-name
                         ::workbook (xl/load-workbook file-name)})))
 
+(defn sheets-with-metadata [{:keys [::file-name ::workbook]}]
+  {::file-name file-name
+   ::sheets (xl/sheet-seq workbook)})
+
+(defn rows-with-metadata [{:keys [::file-name ::sheets]}]
+  (into []
+        (comp
+         (map (fn [sheet]
+                {::file-name file-name
+                 ::sheet-name (xl/sheet-name sheet)
+                 ::rows (into [] (xl/row-seq sheet))}))
+         (mapcat (fn [{:keys [::file-name ::sheet-name ::rows]}]
+                   (into []
+                         (comp
+                          (map (fn [^Row row]
+                                 {::file-name file-name
+                                  ::sheet-name sheet-name
+                                  ::row row
+                                  ::row-index (inc (.getRowNum row))
+                                  ::cells (read-row row)}))
+                          (filter #(some some? (::cells %))))
+                         rows))))
+        sheets))
+
 (def workbook->data-xf
   (comp
-   (map (fn [{:keys [::file-name ::workbook]}]
-          {::file-name file-name
-           ::sheets (xl/sheet-seq workbook)}))
-   (mapcat (fn [{:keys [::file-name ::sheets]}]
-             (into []
-                   (comp
-                    (map (fn [sheet]
-                           {::file-name file-name
-                            ::sheet-name (xl/sheet-name sheet)
-                            ::rows (into [] (xl/row-seq sheet))}))
-                    (mapcat (fn [{:keys [::file-name ::sheet-name ::rows]}]
-                              (into []
-                                    (comp
-                                     (map (fn [^Row row]
-                                            {::file-name file-name
-                                             ::sheet-name sheet-name
-                                             ::row row
-                                             ::row-index (inc (.getRowNum row))
-                                             ::cells (read-row row)}))
-                                     (filter #(some some? (::cells %))))
-                                    rows))))
-                   sheets)))))
+   (map sheets-with-metadata)
+   (mapcat rows-with-metadata)))
 
 (def files->data-xf
   (comp

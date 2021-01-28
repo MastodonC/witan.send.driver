@@ -95,11 +95,25 @@
    :need need-2
    :academic-year academic-year-2})
 
+(defn transition->census-like [first-transition-year transition]
+  (if (= first-transition-year (:calendar-year transition))
+    [(transition-s1->census transition)
+     (transition-s2->census transition)]
+    [(transition-s2->census transition)]))
+
 (defn ->census-like
   "Create a census shaped data structure for further charting output. It
   can never be a proper census file as we don't have the pseudo IDs
   that would allow us to trace longitudinally."
   [transitions]
+  (let [first-transition-year (first (into (sorted-set) (map :calendar-year transitions)))]
+    (into []
+          (mapcat (partial transition->census-like first-transition-year))
+          transitions)))
+
+
+(comment
+
   (let [last-transition-year (last (into (sorted-set) (map :calendar-year transitions)))]
     (into
      (into []
