@@ -40,6 +40,16 @@
   ([acc [k n]]
    (assoc! acc k (+ (get acc k 0) n))))
 
+(defn histogram-from-transition-counts
+  ([xf simulated-transition-counts]
+   (transduce
+    xf
+    histogram-rf
+    simulated-transition-counts))
+  ([simulated-transition-count-eduction]
+   (histogram-rf
+    (reduce histogram-rf simulated-transition-count-eduction))))
+
 (comment
 
   (histogram-summary [1 2 3 2 1])
