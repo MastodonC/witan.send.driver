@@ -72,14 +72,17 @@
            (map #(if (needs-leaver? %) (leaver-side %) %)))
           (vals (group-by (juxt :anon-ref :calendar-year) (cs/union s1 s2))))))
 
-(defn ->csv [prefix transitions]
-  (with-open [w (io/writer (str prefix "transitions.csv"))]
-    (let [header [:calendar-year :setting-1 :need-1 :academic-year-1 :setting-2 :need-2 :academic-year-2]]
-      (csv/write-csv
-       w
-       (into [(mapv name header)]
-             (map (apply juxt header))
-             transitions)))))
+(defn ->csv
+  ([prefix transitions]
+   (->csv prefix "" transitions))
+  ([prefix suffix transitions]
+   (with-open [w (io/writer (str prefix "transitions" suffix ".csv"))]
+     (let [header [:calendar-year :setting-1 :need-1 :academic-year-1 :setting-2 :need-2 :academic-year-2]]
+       (csv/write-csv
+        w
+        (into [(mapv name header)]
+              (map (apply juxt header))
+              transitions))))))
 
 (defn transition-s1->census [{:keys [calendar-year setting-1 need-1 academic-year-1]}]
   {:anon-ref -1

@@ -398,7 +398,7 @@
   (let [transition-years (x/into (sorted-set) (map :calendar-year) transitions)
         calendar-years (conj transition-years (inc (last transition-years)))
         settings (x/into (sorted-set) (map :setting-1) transitions)
-        needs (x/into (sorted-set) (map :need-1) transitions)
+        needs (x/into (sorted-set) (comp (remove #(= (:need-1 %) "NONSEND")) (map :need-1)) transitions)
         data {:census (it/->census-like transitions)
               :transitions transitions
               :calendar-years calendar-years
