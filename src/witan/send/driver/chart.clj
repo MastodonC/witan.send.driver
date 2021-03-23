@@ -4,6 +4,7 @@
             [cljplot.render :as plotr]
             [cljplot.build :as plotb]
             [cljplot.core :as plot]
+            [cljplot.config :as cfg]
             [clojure2d.color :as color]
             [witan.send.driver.chart :as chart]
             [witan.send.driver.ingest :as i]
@@ -56,7 +57,12 @@
 ;; use pivot-table and pivot-table-values
 (defn grouped-column
   [title domain colours data]
-  (let [palette (map colours domain)
+  (let [_config (swap! cfg/configuration
+                       (fn [c]
+                         (-> c
+                             (assoc-in [:legend :font] "Open Sans Bold")
+                             (assoc-in [:legend :font-size] 24))))
+        palette (map colours domain)
         legend-spec (mapv
                      (fn [sd p]
                        [:rect sd {:color p}])
@@ -66,8 +72,8 @@
         (plotb/update-scale :y :ticks 20)
         (plotb/update-scale :y :fmt "%,.0f")
         ;; (plotb/update-scale :x :fmt name)
-        (plotb/add-axes :left)
-        (plotb/add-axes :bottom)
+        (plotb/add-axes :left {:ticks {:font-size 24}})
+        (plotb/add-axes :bottom {:ticks {:font-size 24}})
         ;;(plotb/add-label :bottom domain-name)
         ;;(plotb/add-label :left range-name)
         (plotb/add-label :top title {:font-size 24 :font "Open Sans Bold" :margin 36})
