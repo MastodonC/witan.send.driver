@@ -38,7 +38,9 @@
     histogram-summary-rf
     (persistent! acc)))
   ([acc [k n]]
-   (assoc! acc k (+ (get acc k 0) n))))
+   (try
+     (assoc! acc k (+ (get acc k 0) n))
+     (catch Exception e (throw (ex-info "Failed to update counts" {:acc acc :k k :n n} e))))))
 
 (defn histogram-from-transition-counts
   ([xf simulated-transition-counts]
@@ -47,8 +49,7 @@
     histogram-rf
     simulated-transition-counts))
   ([simulated-transition-count-eduction]
-   (histogram-rf
-    (reduce histogram-rf simulated-transition-count-eduction))))
+   (histogram-from-transition-counts identity simulated-transition-count-eduction)))
 
 (comment
 
