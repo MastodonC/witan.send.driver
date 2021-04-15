@@ -19,6 +19,25 @@
 (def settings-xf
   (map key-by-setting-calendar-year))
 
+(defn key-by-setting-calendar-year-need
+  [{:keys [simulation setting calendar-year need transition-count]
+    :or {transition-count 1}
+    :as _census-record}]
+  [{:simulation simulation :setting setting :calendar-year calendar-year :need need} transition-count])
+
+(def settings-by-need-xf
+  (map key-by-setting-calendar-year-need))
+
+
+(defn key-by-setting-calendar-year-academic-year
+  [{:keys [simulation setting calendar-year academic-year transition-count]
+    :or {transition-count 1}
+    :as _census-record}]
+  [{:simulation simulation :setting setting :calendar-year calendar-year :academic-year academic-year} transition-count])
+
+(def settings-by-academic-year-xf
+  (map key-by-setting-calendar-year-academic-year))
+
 (defn settings-counts
   ([{::keys [in-chan out-chan] :as chan-map} xf rf]
    (a/pipe
@@ -30,6 +49,22 @@
 
 
 (comment
+
+  (transduce
+   settings-by-need-xf
+   xfs/histogram-rf
+   [{:setting "a" :need "n-a" :calendar-year 2020 :simulation 1}
+    {:setting "a" :need "n-b" :calendar-year 2020 :simulation 1}
+    {:setting "a" :need "n-a" :calendar-year 2020 :simulation 2}
+    {:setting "a" :need "n-a" :calendar-year 2021 :simulation 1}
+    {:setting "a" :need "n-a" :calendar-year 2021 :simulation 2}
+
+    {:setting "b" :need "n-a" :calendar-year 2020 :simulation 1}
+    {:setting "b" :need "n-b" :calendar-year 2020 :simulation 1}
+    {:setting "b" :need "n-a" :calendar-year 2020 :simulation 2}
+    {:setting "b" :need "n-a" :calendar-year 2021 :simulation 1}
+    {:setting "b" :need "n-b" :calendar-year 2021 :simulation 1}
+    {:setting "b" :need "n-a" :calendar-year 2021 :simulation 2}])
 
   (transduce
    settings-xf

@@ -4,11 +4,13 @@
          org.clojure/data.csv           {:mvn/version "0.1.4"}
          org.clojure/math.combinatorics {:mvn/version "0.1.6"}
          cljplot/cljplot                {:mvn/version "0.0.2-SNAPSHOT"}
-         dk.ative/docjure               {:mvn/version "1.13.0"}
+         dk.ative/docjure               {:mvn/version "1.14.0"}
          net.cgrand/xforms              {:mvn/version "0.18.2"}
          com.taoensso/nippy             {:mvn/version "3.0.0"}
+         reducibles/reducibles          {:mvn/version "0.3.0"}
          tick/tick                      {:mvn/version "0.4.14-alpha"}
-         witan.send/witan.send          {:local/root "../witan.send"}}
+         witan.send/witan.send          {:local/root "../witan.send"}
+         witan.send/witan.send.vis      {:local/root "../witan.send.vis"}}
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps  {org.clojure/test.check {:mvn/version "0.10.0-RC1"}}}

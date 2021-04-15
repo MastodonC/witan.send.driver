@@ -75,12 +75,12 @@
   (-> transition-count
       (update :simulation i/->int)
       (update :calendar-year i/->int)
-      (update :setting-1 keyword)
-      (update :need-1 keyword)
+      ;; (update :setting-1 keyword)
+      ;; (update :need-1 keyword)
       (update :academic-year-1 i/->int)
       (update :academic-year-2 i/->int)
-      (update :setting-2 keyword)
-      (update :need-2 keyword)
+      ;; (update :setting-2 keyword)
+      ;; (update :need-2 keyword)
       (update :transition-count i/->int)))
 
 (defn csv->data
@@ -155,23 +155,32 @@
                                      io/input-stream
                                      java.util.zip.GZIPInputStream.))))
 
-(def transit-files-xf
+(defn gzipped-transit-file-eduction [filename]
+  (eduction
+   (r/transit-reducible :msgpack (-> filename
+                                     io/file
+                                     io/input-stream
+                                     java.util.zip.GZIPInputStream.))))
+
+(def gzipped-transit-file-paths-xf
   (comp
    (filter #(re-find #"transit\.gz$" (.getName %)))
-   (map #(.getPath %))
-   (map (fn [filename]
-          (eduction
-           (r/transit-reducible :msgpack (-> filename
-                                             io/file
-                                             io/input-stream
-                                             java.util.zip.GZIPInputStream.)))))
+   (map #(.getPath %))))
+
+(def transit-files-xf
+  (comp
+   gzipped-transit-file-paths-xf
+   (map gzipped-transit-file-eduction)
    cat
    simulated-transitions->transition-counts-xf))
+
+(defn sorted-file-list [directory]
+  (-> directory
+      io/file
+      .listFiles
+      sort))
 
 (defn transit-files->eduction [directory]
   (eduction
    transit-files-xf
-   (-> directory
-       io/file
-       .listFiles
-       sort)))
+   (sorted-file-list directory)))
