@@ -27,7 +27,8 @@
                                  calendar-year
                                  transition-count
                                  academic-year-1 setting-1 need-1]
-                          :as transition}]
+                          :as transition
+                          :or {transition-count 1}}]
   (try
     {:simulation       simulation
      :calendar-year    calendar-year
@@ -42,7 +43,8 @@
                                  calendar-year
                                  transition-count
                                  academic-year-2 setting-2 need-2]
-                          :as transition}]
+                          :as transition
+                          :or {transition-count 1}}]
   (try
     {:simulation       simulation
      :calendar-year    (inc calendar-year)
