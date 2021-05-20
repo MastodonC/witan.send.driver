@@ -3,7 +3,7 @@
          org.clojure/core.async         {:mvn/version "1.3.610"}
          org.clojure/data.csv           {:mvn/version "0.1.4"}
          org.clojure/math.combinatorics {:mvn/version "0.1.6"}
-         cljplot/cljplot                {:mvn/version "0.0.2-SNAPSHOT"}
+         cljplot/cljplot                {:mvn/version "0.0.2a-SNAPSHOT"}
          dk.ative/docjure               {:mvn/version "1.14.0"}
          net.cgrand/xforms              {:mvn/version "0.18.2"}
          com.taoensso/nippy             {:mvn/version "3.0.0"}

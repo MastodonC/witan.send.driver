@@ -144,7 +144,7 @@
 
 ;; use pivot-table
 (defn multi-line [data]
-  (let [pal (color/palette-presets :tableau-20-2)
+  (let [pal (color/palette :tableau-20-2)
         pt-types [\o \x \v]
         legend (map #(vector :line (name %2) {:color %1 :shape %3}) pal (keys data) (cycle pt-types))]
     (-> (plotb/series [:grid])
@@ -378,10 +378,10 @@
               :settings settings
               :needs needs
               :transition-years transition-years
-              :settings-palette (zipmap settings (color/palette-presets :tableau-20))
-              :needs-palette (zipmap needs (reverse (color/palette-presets :tableau-20)))
-              :calendar-years-palette (zipmap calendar-years (color/palette-presets :green-orange-teal))
-              :transition-years-palette (zipmap transition-years (color/palette-presets :green-orange-teal))}]
+              :settings-palette (zipmap settings (color/palette :tableau-20))
+              :needs-palette (zipmap needs (reverse (color/palette :tableau-20)))
+              :calendar-years-palette (zipmap calendar-years (color/palette :green-orange-teal))
+              :transition-years-palette (zipmap transition-years (color/palette :green-orange-teal))}]
 
     ((juxt
       total-population-per-calendar-year-broken-down-by-need
@@ -411,10 +411,10 @@
               :settings settings
               :needs needs
               :transition-years transition-years
-              :settings-palette (zipmap settings (color/palette-presets :tableau-20))
-              :needs-palette (zipmap needs (reverse (color/palette-presets :tableau-20)))
-              :calendar-years-palette (zipmap calendar-years (color/palette-presets :green-orange-teal))
-              :transition-years-palette (zipmap transition-years (color/palette-presets :green-orange-teal))}]
+              :settings-palette (zipmap settings (color/palette :tableau-20))
+              :needs-palette (zipmap needs (reverse (color/palette :tableau-20)))
+              :calendar-years-palette (zipmap calendar-years (color/palette :green-orange-teal))
+              :transition-years-palette (zipmap transition-years (color/palette :green-orange-teal))}]
     ((juxt
       ;; census based
       ;;total-population-per-calendar-year-broken-down-by-need ;;FIXME

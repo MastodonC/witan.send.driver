@@ -13,6 +13,10 @@
                      xl/row-seq)]
     (map read-row row-seq)))
 
+(defn row-maps [file-name sheet-name cols-map]
+  (->> (xl/load-workbook file-name)
+       (xl/select-sheet sheet-name)
+       (xl/select-columns cols-map)))
 
 (defn file->sheets [file-name]
   (into []

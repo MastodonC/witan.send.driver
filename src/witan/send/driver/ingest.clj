@@ -19,6 +19,12 @@
         (throw (ex-info (format "Failed to parse supplied value '%s'" x)
                         {:value x}))))
 
+(defn calendar-years [census-data]
+  (->> census-data
+       (map :calendar-year)
+       distinct
+       count))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Aliased for legacy code
 (def joiner? dt/joiner?)
