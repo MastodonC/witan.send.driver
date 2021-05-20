@@ -7,11 +7,16 @@
         (map xl/read-cell)
         (xl/cell-seq row)))
 
-(defn rows [file-name sheet-name]
-  (let [row-seq (->> (xl/load-workbook file-name)
-                     (xl/select-sheet sheet-name)
-                     xl/row-seq)]
-    (map read-row row-seq)))
+(defn rows
+  ([file-name sheet-name]
+   (let [row-seq (->> (xl/load-workbook file-name)
+                      (xl/select-sheet sheet-name)
+                      xl/row-seq)]
+     (map read-row row-seq)))
+  ([file-name sheet-name cols-map]
+   (->> (xl/load-workbook file-name)
+        (xl/select-sheet sheet-name)
+        (xl/select-columns cols-map))))
 
 
 (defn file->sheets [file-name]
