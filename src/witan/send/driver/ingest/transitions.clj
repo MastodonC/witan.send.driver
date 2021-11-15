@@ -84,15 +84,15 @@
               (map (apply juxt header))
               transitions))))))
 
-(defn transition-s1->census [{:keys [calendar-year setting-1 need-1 academic-year-1]}]
-  {:anon-ref -1
+(defn transition-s1->census [{:keys [calendar-year setting-1 need-1 academic-year-1 anon-ref]}]
+  {:anon-ref (if anon-ref anon-ref -1)
    :calendar-year calendar-year
    :setting setting-1
    :need need-1
    :academic-year academic-year-1})
 
-(defn transition-s2->census [{:keys [calendar-year setting-2 need-2 academic-year-2]}]
-  {:anon-ref -1
+(defn transition-s2->census [{:keys [calendar-year setting-2 need-2 academic-year-2 anon-ref]}]
+  {:anon-ref (if anon-ref anon-ref -1)
    :calendar-year (inc calendar-year)
    :setting setting-2
    :need need-2
@@ -105,9 +105,9 @@
     [(transition-s2->census transition)]))
 
 (defn ->census-like
-  "Create a census shaped data structure for further charting output. It
-  can never be a proper census file as we don't have the pseudo IDs
-  that would allow us to trace longitudinally."
+  "Create a census shaped data structure for further charting output. If
+  pseudo IDs aren't provided if will not be a proper census file as we
+  won't be able to trace IDs longitudinally."
   [transitions]
   (let [first-transition-year (first (into (sorted-set) (map :calendar-year transitions)))]
     (into []
